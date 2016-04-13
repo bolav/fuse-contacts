@@ -23,7 +23,9 @@
     "Fuse.UserEvents",
     "FuseCore",
     "Uno.Collections",
-    "Uno.Geometry"
+    "Uno.Geometry",
+
+    "Uno.Threading"
   ],
   "Includes": [
     "*"

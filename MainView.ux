@@ -2,7 +2,14 @@
 	<Contacts ux:Global="Contacts" />
 	<JavaScript>
 		var contacts = require('Contacts');
-		console.log(JSON.stringify(contacts.getAll()));
+		var auth = contacts.authorize();
+		console.log(auth);
+		auth.then(function (status) {
+			console.log(status);
+			if (status === 'AuthorizationAuthorized') {
+				console.log(JSON.stringify(contacts.getAll()));
+			}
+		})
 	</JavaScript>
 </App>
 
