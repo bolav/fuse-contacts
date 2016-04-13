@@ -14,7 +14,7 @@ public class Contacts : NativeModule {
 
 	object GetAll (Context c, object[] args)
 	{
-		var a = new JSListDict(c);
+		var a = new JSList(c);
 		ContactsImpl.GetAllImpl(a);
 		return a.GetScriptingArray();
 	}
