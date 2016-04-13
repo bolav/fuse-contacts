@@ -1,0 +1,8 @@
+<App Theme="Basic">
+	<Contacts ux:Global="Contacts" />
+	<JavaScript>
+		var contacts = require('Contacts');
+		console.log(JSON.stringify(contacts.getAll()));
+	</JavaScript>
+</App>
+
