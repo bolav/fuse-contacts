@@ -25,16 +25,11 @@
     "Uno.Collections",
     "Uno.Geometry",
 
+    "Android",
     "Uno.Threading"
   ],
   "Includes": [
     "*"
-  ],
-  "Projects": [
-    "fuse_modules/bolav/fuse-foreignhelpers/foreignhelpers_include.unoproj"
-  ],
-  "Excludes": [
-    "fuse_modules/"
   ],
   "FusePM": {
     "Dependencies": [

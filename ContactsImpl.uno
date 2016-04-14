@@ -6,7 +6,7 @@ using Uno.Threading;
 
 public extern(!Mobile) class ContactsImpl
 {
-	public static void GetAllImpl(ListDict ret) {
+	public static void GetAllImpl(JSList ret) {
 		debug_log("Contacts only working on mobile");
 	} 
 
@@ -14,5 +14,6 @@ public extern(!Mobile) class ContactsImpl
 	{
 		var p = new Promise<string>();
 		p.Reject(new Exception("Contacts not available on current platform"));
+		return p;
 	}
 }
