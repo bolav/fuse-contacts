@@ -1,11 +1,11 @@
 using Uno;
-using Uno.Collections;
 using Fuse;
 using Bolav.ForeignHelpers;
 using Uno.Compiler.ExportTargetInterop;
 using Uno.Threading;
 
 [Require("Source.Import","AddressBook/AddressBook.h")]
+[Require("Source.Include", "@{ForeignDict:Include}")]
 [Require("Xcode.Framework", "AddressBook")]
 public extern(iOS) class ContactsImpl
 {
@@ -46,7 +46,7 @@ public extern(iOS) class ContactsImpl
 
 	// http://stackoverflow.com/questions/3747844/get-a-list-of-all-contacts-on-ios
 	[Foreign(Language.ObjC)]
-	public static void GetAllImpl(ListDict ret) 
+	public static void GetAllImpl(ForeignList ret) 
 	@{
 		CFErrorRef error = NULL;
 		ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
@@ -56,12 +56,39 @@ public extern(iOS) class ContactsImpl
 
 		for ( int i = 0; i < nPeople; i++ )
 		{
-			@{ListDict:Of(ret).NewRowSetActive():Call()};
+			id<UnoObject> row = @{ForeignList:Of(ret).NewDictRow():Call()};
 		    ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
-		    @{ListDict:Of(ret).SetRow_Column(string,string):Call(@"firstName", CFBridgingRelease(ABRecordCopyValue(person, kABPersonFirstNameProperty)))};
-		    @{ListDict:Of(ret).SetRow_Column(string,string):Call(@"lastName", CFBridgingRelease(ABRecordCopyValue(person, kABPersonLastNameProperty)))};
-		    @{ListDict:Of(ret).SetRow_Column(string,string):Call(@"organization", CFBridgingRelease(ABRecordCopyValue(person, kABPersonOrganizationProperty)))};
-		    // @{ListDict:Of(ret).SetRow_Column(string,string):Call(@"email", CFBridgingRelease(ABRecordCopyValue(person, kABPersonEmailProperty)))};
+		    // https://developer.apple.com/library/ios/documentation/AddressBook/Reference/ABRecordRef_iPhoneOS/
+		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"firstName", CFBridgingRelease(ABRecordCopyValue(person, kABPersonFirstNameProperty)))};
+		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"lastName", CFBridgingRelease(ABRecordCopyValue(person, kABPersonLastNameProperty)))};
+		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"organization", CFBridgingRelease(ABRecordCopyValue(person, kABPersonOrganizationProperty)))};
+
+
+		    id<UnoObject> emailList = @{ForeignDict:Of(row).AddListForKey(string):Call(@"email")};
+		    ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
+		    for (CFIndex i = 0; i < ABMultiValueGetCount(emails); i++) {
+		    	id<UnoObject> emailRow = @{ForeignList:Of(emailList).NewDictRow():Call()};
+
+		        NSString *label = (__bridge NSString *) ABMultiValueCopyLabelAtIndex(emails, i);
+		        NSString *email = (__bridge NSString *) ABMultiValueCopyValueAtIndex(emails, i);
+		        @{ForeignDict:Of(emailRow).SetKeyVal(string,string):Call(@"email", email)};
+		        @{ForeignDict:Of(emailRow).SetKeyVal(string,string):Call(@"label", label)};
+		    }
+		    CFRelease(emails);
+
+		    id<UnoObject> phoneList = @{ForeignDict:Of(row).AddListForKey(string):Call(@"phone")};
+		    ABMultiValueRef phones = (ABMultiValueRef)ABRecordCopyValue(person, kABPersonPhoneProperty);
+		    for (int i=0; i < ABMultiValueGetCount(phones); i++) {
+		    	id<UnoObject> phoneRow = @{ForeignList:Of(phoneList).NewDictRow():Call()};
+
+		        NSString *label = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phones, i);
+		        NSString *phone = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phones, i);
+		        @{ForeignDict:Of(phoneRow).SetKeyVal(string,string):Call(@"phone", phone)};
+		        @{ForeignDict:Of(phoneRow).SetKeyVal(string,string):Call(@"label", label)};
+
+		    }
+		    CFRelease(phones);
+
 		}
 		CFRelease(allPeople);
 	@} 
