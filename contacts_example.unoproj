@@ -1,0 +1,16 @@
+{
+  "Name":"ContactsExample",
+  "RootNamespace": "",
+  "Packages": [
+    "Fuse",
+    "FuseJS"
+  ],
+  "Includes": [
+    "*"
+  ],
+  "FusePM": {
+    "Dependencies": [
+      "https://github.com/bolav/fuse-foreignhelpers"
+    ]
+  }
+}

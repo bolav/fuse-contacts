@@ -1,4 +1,4 @@
-<App Theme="Basic">
+<App>
 	<Contacts ux:Global="Contacts" />
 	<JavaScript>
 		var contacts = require('Contacts');
