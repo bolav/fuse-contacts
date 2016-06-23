@@ -1,4 +1,4 @@
-Fuse Contacts bindings
+Fuse Contacts bindings [![Build Status](https://travis-ci.org/bolav/fuse-contacts.svg?branch=master)](https://travis-ci.org/bolav/fuse-contacts) ![Fuse Version](http://fuse-version.herokuapp.com/?repo=https://github.com/bolav/fuse-contacts)
 ======================
 
 Library to use contacts in [Fuse](http://www.fusetools.com/).
