@@ -92,7 +92,6 @@ public extern(iOS) class ContactsImpl
 		}
 		CFRelease(allPeople);
 	@} 
-}
 
 	[Foreign(Language.ObjC)]
 	public static void GetPageImpl(ForeignList ret, int numRows, int curPage) 
