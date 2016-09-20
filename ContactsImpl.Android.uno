@@ -19,8 +19,10 @@ public extern(Android) class ContactsImpl
 	@{
 		Activity a = com.fuse.Activity.getRootActivity();
 		ContentResolver cr = a.getContentResolver();
+		String selection =  ContactsContract.Contacts.IN_VISIBLE_GROUP + " = ?";
+		String[] Args = { "1" };
 		Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
-		        null, null, null, null);
+		        null, selection, Args, null);
 
 		if (cur.getCount() > 0) {
 		    while (cur.moveToNext()) {
