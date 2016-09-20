@@ -35,6 +35,7 @@ public extern(Android) class ContactsImpl
 		    	@{ForeignDict:Of(row).SetKeyVal(string,string):Call("name",
 		    		cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)) )};
 
+		    	// read the phone numbers at the current cursor
 		        if (Integer.parseInt(cur.getString(cur.getColumnIndex(
 		                    ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
 		            Cursor pCur = cr.query(
@@ -53,6 +54,21 @@ public extern(Android) class ContactsImpl
 		            }
 		            pCur.close();
 		        }
+
+		    	// read the e-mail addresses at the current cursor
+				Cursor emailCur = cr.query( 
+			 				ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
+			 				null,
+			 				ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", 
+			 				new String[]{id}, null);
+				Object emailList = @{ForeignDict:Of(row).AddListForKey(string):Call("email")};
+		 		while (emailCur.moveToNext()) { 
+	            	Object emailRow = @{ForeignList:Of(emailList).NewDictRow():Call()};
+	            	@{ForeignDict:Of(emailRow).SetKeyVal(string,string):Call("email", 
+	            		emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA))
+	            		)};
+		 		} 
+		 		emailCur.close();
 		    }
 		}
 		cur.close();
