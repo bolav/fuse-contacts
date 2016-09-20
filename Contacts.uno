@@ -28,6 +28,13 @@ public class Contacts : NativeModule {
 		return a.GetScriptingArray();
 	}
 
+	object GetPage (Context c, object[] args)
+	{
+		var a = new JSList(c);
+		ContactsImpl.GetPageImpl(a, Marshal.ToInt(args[0]), Marshal.ToInt(args[1]));
+		return a.GetScriptingArray();
+	}
+
 	Future<string> Authorize (object[] args)
 	{
 		return ContactsImpl.AuthorizeImpl();

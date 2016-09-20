@@ -94,6 +94,65 @@ public extern(iOS) class ContactsImpl
 	@} 
 }
 
+	[Foreign(Language.ObjC)]
+	public static void GetPageImpl(ForeignList ret, int numRows, int curPage) 
+	@{
+		CFErrorRef error = NULL;
+		ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
+		ABRecordRef source = ABAddressBookCopyDefaultSource(addressBook);
+		CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeopleInSourceWithSortOrdering(addressBook, source, kABPersonSortByFirstName);
+		CFIndex nPeople = CFArrayGetCount(allPeople);
+
+		int i = curPage * numRows;
+		int j = i + numRows;
+
+		while ( i < j )
+		{
+			i++; 
+			if (i >= nPeople) break;
+			id<UnoObject> row = @{ForeignList:Of(ret).NewDictRow():Call()};
+		    ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
+		    NSString *firstName = CFBridgingRelease(ABRecordCopyValue(person, kABPersonFirstNameProperty));
+		    NSString *lastName = CFBridgingRelease(ABRecordCopyValue(person, kABPersonLastNameProperty));
+		    NSString *fullName = @"";
+		    if (!firstName && !lastName) {
+		    	fullName = @"Unknown Contact";
+		    } else if (!lastName) {
+		    	fullName = [NSString stringWithFormat:@"%@", firstName];
+		    } else if (!firstName) {
+		    	fullName = [NSString stringWithFormat:@"%@", lastName];
+		    } else {
+		    	fullName = [NSString stringWithFormat:@"%@%@%@", firstName, @" ", lastName];
+		    }
+		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"name", fullName)};
+
+
+		    id<UnoObject> emailList = @{ForeignDict:Of(row).AddListForKey(string):Call(@"email")};
+		    ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
+		    for (CFIndex i = 0; i < ABMultiValueGetCount(emails); i++) {
+		    	id<UnoObject> emailRow = @{ForeignList:Of(emailList).NewDictRow():Call()};
+
+		        NSString *email = (__bridge NSString *) ABMultiValueCopyValueAtIndex(emails, i);
+		        @{ForeignDict:Of(emailRow).SetKeyVal(string,string):Call(@"email", email)};
+		    }
+		    CFRelease(emails);
+
+		    id<UnoObject> phoneList = @{ForeignDict:Of(row).AddListForKey(string):Call(@"phone")};
+		    ABMultiValueRef phones = (ABMultiValueRef)ABRecordCopyValue(person, kABPersonPhoneProperty);
+		    for (int i=0; i < ABMultiValueGetCount(phones); i++) {
+		    	id<UnoObject> phoneRow = @{ForeignList:Of(phoneList).NewDictRow():Call()};
+
+		        NSString *phone = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phones, i);
+		        @{ForeignDict:Of(phoneRow).SetKeyVal(string,string):Call(@"phone", phone)};
+
+		    }
+		    CFRelease(phones);
+
+		}
+		CFRelease(allPeople);
+	@} 
+}
+
 [Require("Source.Import","AddressBook/AddressBook.h")]
 public extern(iOS) class AuthorizationClosure {
 	Promise<string> promise;
