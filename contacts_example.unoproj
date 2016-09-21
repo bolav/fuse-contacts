@@ -4,7 +4,8 @@
   "Packages": [
     "Fuse",
     "FuseJS",
-    "Android"
+    "Android",
+    "Uno.Permissions"
   ],
   "Includes": [
     "*"
