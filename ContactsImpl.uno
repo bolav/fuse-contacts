@@ -10,6 +10,10 @@ public extern(!Mobile) class ContactsImpl
 		debug_log("Contacts only working on mobile");
 	} 
 
+	public static void GetPageImpl(JSList ret, int numRows, int curPage) {
+		debug_log("Contacts only working on mobile");
+	} 
+
 	public static Future<string> AuthorizeImpl()
 	{
 		var p = new Promise<string>();

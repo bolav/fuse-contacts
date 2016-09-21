@@ -1,13 +1,22 @@
 using Uno;
+using Uno.UX;
 using Uno.Threading;
+using Fuse;
 using Fuse.Scripting;
 using Fuse.Reactive;
 using Bolav.ForeignHelpers;
 
+[UXGlobalModule]
 public class Contacts : NativeModule {
+
+	static readonly Contacts _instance;
 
 	public Contacts()
 	{
+		if (_instance != null) return;
+		_instance = this;
+		Resource.SetGlobalKey(_instance, "Contacts");
+		
 		AddMember(new NativePromise<string, string>("authorize", Authorize, null));
 		AddMember(new NativeFunction("getAll", (NativeCallback)GetAll));
 	}
@@ -16,6 +25,13 @@ public class Contacts : NativeModule {
 	{
 		var a = new JSList(c);
 		ContactsImpl.GetAllImpl(a);
+		return a.GetScriptingArray();
+	}
+
+	object GetPage (Context c, object[] args)
+	{
+		var a = new JSList(c);
+		ContactsImpl.GetPageImpl(a, Marshal.ToInt(args[0]), Marshal.ToInt(args[1]));
 		return a.GetScriptingArray();
 	}
 

@@ -1,7 +1,7 @@
 env:
   global:
     - NDK_VERSION=r10e
-    - FUSE_VERSION=0.21.0.6650
+    - FUSE_VERSION=0.25.5.7677
     - UNOPROJ=contacts_example
     - NAME=ContactsExample
 language: 
