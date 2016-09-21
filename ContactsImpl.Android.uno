@@ -4,7 +4,7 @@ using Fuse;
 using Bolav.ForeignHelpers;
 using Uno.Threading;
 using Uno.Compiler.ExportTargetInterop;
-using Android.Base;
+using Uno.Permissions;
 
 [ForeignInclude(Language.Java,
                 "android.provider.ContactsContract",
@@ -132,13 +132,26 @@ public extern(Android) class ContactsImpl
 		cur.close();
 	@}
 
+	private static void AuthorizeResolved(PlatformPermission permission)
+	{
+		_authorizePromise.Resolve("AuthorizationAuthorized");
+	}
+
+	private static void AuthorizeRejected(Exception reason)
+	{
+		_authorizePromise.Reject(reason);
+	}
+
+	static Promise<string> _authorizePromise;
+
 	public static Future<string> AuthorizeImpl()
 	{
-		var p = new Promise<string>();
-		Permissions.RequestPermission(Permissions.READ_CONTACTS);
-
-		p.Resolve("AuthorizationAuthorized");
-		// p.Reject(new Exception("Authorize not required on current platform"));
-		return p;
+		if (_authorizePromise == null)
+		{
+			_authorizePromise = new Promise<string>();
+			Permissions.Request(Permissions.Android.READ_CONTACTS).Then(AuthorizeResolved, AuthorizeRejected);
+		}
+		return _authorizePromise;
 	}
+
 }
