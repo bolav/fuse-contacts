@@ -15,11 +15,8 @@ sudo: required
 
 cache:
   directories:
-#    - /Applications/Fuse.app
 #    - /usr/local/share/uno
-#    - $HOME/.fuse
     - $HOME/Library/Android
-#    - $HOME/fuse
 
 
 before_install:
