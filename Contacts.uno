@@ -19,6 +19,7 @@ public class Contacts : NativeModule {
 		
 		AddMember(new NativePromise<string, string>("authorize", Authorize, null));
 		AddMember(new NativeFunction("getAll", (NativeCallback)GetAll));
+		AddMember(new NativeFunction("getPage", (NativeCallback)GetPage));
 	}
 
 	object GetAll (Context c, object[] args)
